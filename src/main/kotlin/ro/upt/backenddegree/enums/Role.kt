@@ -1,5 +1,5 @@
-package ro.upt.backenddegree.entity
+package ro.upt.backenddegree.enums
 
 enum class Role {
-    ROLE_ADMIN, ROLE_USER
+    ROLE_ADMIN, ROLE_EMPLOYEE
 }

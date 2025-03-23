@@ -9,17 +9,16 @@ import ro.upt.backenddegree.dto.AdminSetupDto
 import ro.upt.backenddegree.service.SetupService
 
 @RestController
-@RequestMapping("/auth")
-class AuthController(private val setupService: SetupService) {
+@RequestMapping("api/setup")
+class SetupController(private val setupService: SetupService) {
 
-    @GetMapping("/setup-check")
+    @GetMapping("/check")
     fun setupCheck(): ResponseEntity<Map<String, Any>> {
         val initialSetup = setupService.isInitialSetupNeeded()
         return ResponseEntity.ok(mapOf("initialSetupNeeded" to initialSetup))
     }
 
-    @PostMapping("/register",
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun initialSetup(@RequestPart adminData: AdminSetupDto, @RequestPart logo: MultipartFile): ResponseEntity<Any> {
         if (!setupService.isInitialSetupNeeded()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Setup already completed.")

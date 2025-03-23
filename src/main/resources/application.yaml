@@ -1,1 +1,32 @@
-spring.application.name=backend-degree
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:postgresql://localhost:5432/degree
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+restaurant:
+  setup:
+    init-path: "/Users/eugen/IdeaProjects/backend-degree/src/main/resources/init.json"
+    logo-dir: "/Users/eugen/IdeaProjects/backend-degree/src/main/resources/photos"
+
+printer:
+  service:
+    kitchen-url: "http://localhost:3030/api/v1/print/kitchen"
+    bar-url: "http://localhost:3030/api/v1/print/bar"
+    receipt-url: "http://localhost:8083"
+    api-key:
+      name: "name"
+      value: "token"
+
+

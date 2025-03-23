@@ -1,4 +1,6 @@
 package ro.upt.backenddegree.dto
 
-class OrderDto {
-}
+data class OrderDto (
+    var tableNumber: String,
+    var orderItemDtos: List<OrderItemDto>,
+)

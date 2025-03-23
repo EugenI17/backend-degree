@@ -5,20 +5,21 @@ import lombok.AllArgsConstructor
 import lombok.Getter
 import lombok.NoArgsConstructor
 import lombok.Setter
-import ro.upt.backenddegree.dto.MenuProductDto
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-data class Invoice(
+data class Receipt(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @ManyToMany
-    val menuProducts: MutableList<MenuProductDto>,
+    @ElementCollection
+    @CollectionTable(name = "receipt_items", joinColumns = [JoinColumn(name = "receipt_id")])
+    val items: MutableList<ReceiptItem> = mutableListOf(),
 
     val discount: Double = 0.0
 )

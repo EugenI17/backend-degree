@@ -1,6 +1,6 @@
 package ro.upt.backenddegree.dto
 
-data class InvoiceDto(
-    val menuProducts: List<MenuProductDto>,
+data class ReceiptDto(
+    val menuProducts: List<ReceiptItemDto>,
     val discount: Double = 0.0
 )

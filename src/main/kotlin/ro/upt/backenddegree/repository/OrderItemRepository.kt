@@ -1,4 +1,6 @@
 package ro.upt.backenddegree.repository
 
-interface OrderItemRepository {
-}
+import org.springframework.data.jpa.repository.JpaRepository
+import ro.upt.backenddegree.entity.OrderItem
+
+interface OrderItemRepository : JpaRepository<OrderItem, Long>

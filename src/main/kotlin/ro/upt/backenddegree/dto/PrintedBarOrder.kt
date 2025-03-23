@@ -1,7 +1,7 @@
-import ro.upt.backenddegree.dto.MenuProductDto
+import ro.upt.backenddegree.dto.PrintedItem
 
 
-data class BarOrderDto(
+data class PrintedBarOrder(
     var tableNumber: String? = null,
-    var menuProducts: List<MenuProductDto>,
+    var items: List<PrintedItem>,
 )
