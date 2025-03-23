@@ -1,6 +1,7 @@
 package ro.upt.backenddegree.dto
 
 class ReceiptItemDto(
-    val productId: Long,
-    val quantity: Int
+    val name: String,
+    val quantity: Int,
+    val price: Double
 )

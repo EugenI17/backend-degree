@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import ro.upt.backenddegree.dto.PrintedKitchenOrder
+import ro.upt.backenddegree.dto.PrintedReceipt
 
 @Service
 
@@ -40,6 +41,17 @@ class PrintRequestService(
             .uri(barPrinterUrl)
             .header(apiKeyName, apiKeyValue)
             .bodyValue(printedBarOrder)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+    }
+
+    fun printReceipt(receipt: PrintedReceipt) {
+        webClient.build()
+            .post()
+            .uri(receiptPrinterUrl)
+            .header(apiKeyName, apiKeyValue)
+            .bodyValue(receipt)
             .retrieve()
             .bodyToMono(String::class.java)
             .block()

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import ro.upt.backenddegree.dto.OrderDto
 import ro.upt.backenddegree.dto.OrderItemDto
 import ro.upt.backenddegree.dto.PrintedKitchenOrder
+import ro.upt.backenddegree.dto.PrintedReceipt
 import ro.upt.backenddegree.entity.MenuProduct
 import ro.upt.backenddegree.entity.Order
 import ro.upt.backenddegree.entity.OrderItem
@@ -35,6 +36,33 @@ class OrderService(
         printRequestService.printBarOrder(prepareBarOrderForPrint(orderDto))
     }
 
+    fun addItemsToExistingOrder(orderDto: OrderDto) {
+        val order = orderRepository.findByTableNumber(orderDto.tableNumber)
+            ?: throw RuntimeException("Order not found for table number ${orderDto.tableNumber}")
+        val orderItems = convertToOrderItems(orderDto.orderItemDtos, order)
+
+        order.items.addAll(orderItems)
+        orderRepository.save(order)
+
+        printRequestService.printKitchenOrder(prepareKitchenOrderForPrint(orderDto))
+        printRequestService.printBarOrder(prepareBarOrderForPrint(orderDto))
+    }
+
+    fun completeOrder(orderDto: OrderDto) {
+        val order = orderRepository.findByTableNumber(orderDto.tableNumber)
+            ?: throw RuntimeException("Order not found for table number ${orderDto.tableNumber}")
+
+        order.status = OrderStatus.COMPLETED
+        orderRepository.save(order)
+
+        val receiptItems = order.items.map{ printedItemMapper.toPrintedReceiptItem(it) }
+
+        val receipt = PrintedReceipt(
+            menuItems = receiptItems,
+        )
+        printRequestService.printReceipt(receipt)
+    }
+
     private fun convertToOrderItems(orderItemsDto : List<OrderItemDto>, order: Order): List<OrderItem> {
         val productIdToQuantity = orderItemsDto
             .groupingBy { it.productId }
@@ -49,18 +77,6 @@ class OrderService(
                 quantity = quantity
             )
         }
-    }
-
-    fun addItemsToExistingOrder(orderDto: OrderDto) {
-        val order = orderRepository.findByTableNumber(orderDto.tableNumber)
-            ?: throw RuntimeException("Order not found for table number ${orderDto.tableNumber}")
-        val orderItems = convertToOrderItems(orderDto.orderItemDtos, order)
-
-        order.items.addAll(orderItems)
-        orderRepository.save(order)
-
-        printRequestService.printKitchenOrder(prepareKitchenOrderForPrint(orderDto))
-        printRequestService.printBarOrder(prepareBarOrderForPrint(orderDto))
     }
 
     private fun prepareKitchenOrderForPrint(orderDto: OrderDto): PrintedKitchenOrder {

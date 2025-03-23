@@ -24,7 +24,7 @@ printer:
   service:
     kitchen-url: "http://localhost:3030/api/v1/print/kitchen"
     bar-url: "http://localhost:3030/api/v1/print/bar"
-    receipt-url: "http://localhost:8083"
+    receipt-url: "http://localhost:3030/api/v1/print/consum"
     api-key:
       name: "name"
       value: "token"

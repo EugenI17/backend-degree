@@ -33,4 +33,12 @@ class OrderController (
             ResponseEntity.badRequest().body(e.message)
         }
 
+    @PostMapping("/finish")
+    fun finishOrder(@RequestBody orderDto: OrderDto): ResponseEntity<Any> =
+        try {
+            orderService.completeOrder(orderDto)
+            ResponseEntity.ok("Order completed.")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
 }
