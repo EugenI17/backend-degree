@@ -1,6 +1,5 @@
 package ro.upt.backenddegree.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import ro.upt.backenddegree.dto.MenuProductDto
 import ro.upt.backenddegree.mapper.MenuProductMapper
@@ -15,9 +14,14 @@ class MenuService (
     fun addProduct(menuProductDto: MenuProductDto) =
         menuProductRepository.save(menuProductMapper.toEntity(menuProductDto))
 
-    fun getProducts() = menuProductRepository.findAll()
+    fun getProducts() = menuProductRepository.findAll().forEach(menuProductMapper::toDto)
 
     fun updateProduct(menuProductDto: MenuProductDto) {
+        val updatedProduct = menuProductMapper.toEntity(menuProductDto)
+        menuProductRepository.save(updatedProduct)
+    }
 
+    fun deleteProduct(id: Long) {
+        menuProductRepository.deleteById(id)
     }
 }

@@ -24,7 +24,6 @@ class OrderService(
 ) {
 
     fun createOrder(orderDto: OrderDto) {
-
         val order = Order(
             tableNumber = orderDto.tableNumber,
             status = OrderStatus.IN_PROGRESS

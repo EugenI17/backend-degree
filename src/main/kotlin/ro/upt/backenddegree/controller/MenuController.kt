@@ -2,11 +2,7 @@ package ro.upt.backenddegree.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ro.upt.backenddegree.dto.MenuProductDto
 import ro.upt.backenddegree.service.MenuService
 
@@ -36,6 +32,25 @@ class MenuController {
         }
     }
 
+    @DeleteMapping("/product/{id}")
+    fun deleteProduct(@PathVariable id: Long): ResponseEntity<Any> {
+        return try {
+            menuProductService.deleteProduct(id)
+            ResponseEntity.ok("Product deleted successfully")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
 
+    }
+
+    @PutMapping("/product")
+    fun updateProduct(@RequestBody productDto: MenuProductDto): ResponseEntity<Any> {
+        return try {
+            menuProductService.updateProduct(productDto)
+            ResponseEntity.ok("Product updated successfully")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
 
 }
