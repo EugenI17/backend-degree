@@ -9,12 +9,12 @@ import ro.upt.backenddegree.repository.MenuProductRepository
 class MenuService (
     private val menuProductMapper: MenuProductMapper,
     private val menuProductRepository: MenuProductRepository
-){
+) {
 
     fun addProduct(menuProductDto: MenuProductDto) =
         menuProductRepository.save(menuProductMapper.toEntity(menuProductDto))
 
-    fun getProducts() = menuProductRepository.findAll().forEach(menuProductMapper::toDto)
+    fun getProducts() = menuProductRepository.findAll().map(menuProductMapper::toDto)
 
     fun updateProduct(menuProductDto: MenuProductDto) {
         val updatedProduct = menuProductMapper.toEntity(menuProductDto)

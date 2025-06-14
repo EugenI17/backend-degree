@@ -28,5 +28,6 @@ printer:
     api-key:
       name: "name"
       value: "token"
-
+server:
+  port: 8081
 

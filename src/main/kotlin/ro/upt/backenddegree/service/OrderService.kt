@@ -1,26 +1,26 @@
 package ro.upt.backenddegree.service
 
-import PrintedBarOrder
 import org.springframework.stereotype.Service
-import ro.upt.backenddegree.dto.OrderDto
-import ro.upt.backenddegree.dto.OrderItemDto
-import ro.upt.backenddegree.dto.PrintedKitchenOrder
-import ro.upt.backenddegree.dto.PrintedReceipt
+import ro.upt.backenddegree.dto.*
 import ro.upt.backenddegree.entity.MenuProduct
 import ro.upt.backenddegree.entity.Order
 import ro.upt.backenddegree.entity.OrderItem
 import ro.upt.backenddegree.enums.OrderStatus
 import ro.upt.backenddegree.enums.ProductType
+import ro.upt.backenddegree.mapper.OrderMapper
 import ro.upt.backenddegree.mapper.PrintedItemMapper
 import ro.upt.backenddegree.repository.MenuProductRepository
 import ro.upt.backenddegree.repository.OrderRepository
+import java.util.Optional
 
 @Service
 class OrderService(
     private val orderRepository: OrderRepository,
     private val menuProductRepository: MenuProductRepository,
     private val printedItemMapper: PrintedItemMapper,
-    private val printRequestService: PrintRequestService
+    private val printRequestService: PrintRequestService,
+    private val orderMapper: OrderMapper,
+    private val statisticsService: StatisticsService
 ) {
 
     fun createOrder(orderDto: OrderDto) {
@@ -31,8 +31,8 @@ class OrderService(
         val orderItems = convertToOrderItems(orderDto.orderItemDtos, order)
         order.items.addAll(orderItems)
         orderRepository.save(order)
-        printRequestService.printKitchenOrder(prepareKitchenOrderForPrint(orderDto))
-        printRequestService.printBarOrder(prepareBarOrderForPrint(orderDto))
+        statisticsService.addOrderToStatistics(order)
+        handleOrderForPrint(orderDto)
     }
 
     fun addItemsToExistingOrder(orderDto: OrderDto) {
@@ -42,9 +42,23 @@ class OrderService(
 
         order.items.addAll(orderItems)
         orderRepository.save(order)
+        statisticsService.addOrderToStatistics(order)
+        handleOrderForPrint(orderDto)
+    }
 
-        printRequestService.printKitchenOrder(prepareKitchenOrderForPrint(orderDto))
-        printRequestService.printBarOrder(prepareBarOrderForPrint(orderDto))
+    private fun handleOrderForPrint( orderDto: OrderDto) {
+        val kitchenOrder = prepareKitchenOrderForPrint(orderDto)
+        val barOrder = prepareBarOrderForPrint(orderDto)
+
+        if (kitchenOrder.isEmpty && barOrder.isEmpty) {
+            throw RuntimeException("No items in the order for table number ${orderDto.tableNumber}")
+        }
+        kitchenOrder.ifPresent {
+            printRequestService.printKitchenOrder(it)
+        }
+        barOrder.ifPresent {
+            printRequestService.printBarOrder(it)
+        }
     }
 
     fun completeOrder(orderDto: OrderDto) {
@@ -78,30 +92,40 @@ class OrderService(
         }
     }
 
-    private fun prepareKitchenOrderForPrint(orderDto: OrderDto): PrintedKitchenOrder {
+    private fun prepareKitchenOrderForPrint(orderDto: OrderDto): Optional<PrintedKitchenOrder> {
 
         val printedStarters = getStarters(orderDto).map { printedItemMapper.toPrintedKitchenItem(it) }
         val printedMainCourses = getMainCourses(orderDto).map { printedItemMapper.toPrintedKitchenItem(it) }
         val printedDesserts = getDesserts(orderDto).map { printedItemMapper.toPrintedKitchenItem(it) }
 
-        return PrintedKitchenOrder(
-            tableNumber = orderDto.tableNumber,
-            starters = printedStarters,
-            main = printedMainCourses,
-            desserts = printedDesserts,
+        if (printedStarters.isEmpty() && printedMainCourses.isEmpty() && printedDesserts.isEmpty()) {
+            return Optional.empty()
+        }
+        return Optional.of(
+            PrintedKitchenOrder(
+                tableNumber = orderDto.tableNumber,
+                starters = printedStarters,
+                main = printedMainCourses,
+                desserts = printedDesserts,
+            )
         )
     }
 
-    private fun prepareBarOrderForPrint(orderDto: OrderDto): PrintedBarOrder {
+    private fun prepareBarOrderForPrint(orderDto: OrderDto): Optional<PrintedBarOrder> {
 
         val drinksGrouped = getDrinks(orderDto).groupBy { it.productId }
         val printedDrinks = drinksGrouped.map { (_, items) ->
             printedItemMapper.toPrintedBarItem(items.first(), items.size)
         }
 
-        return PrintedBarOrder(
+        if (printedDrinks.isEmpty()) {
+            return Optional.empty()
+        }
+        return Optional.of(
+            PrintedBarOrder(
             tableNumber = orderDto.tableNumber,
             items = printedDrinks
+            )
         )
     }
 
@@ -120,5 +144,10 @@ class OrderService(
     private fun getProductType(productId: Long): ProductType {
         val menuProduct: MenuProduct = menuProductRepository.findById(productId).get()
         return menuProduct.type
+    }
+
+    fun getAllOrders(): List<OrderDto> {
+        val orders = orderRepository.findAll()
+        return orders.map { orderMapper.toDto(it) }
     }
 }

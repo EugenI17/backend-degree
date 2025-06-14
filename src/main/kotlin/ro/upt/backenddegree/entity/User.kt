@@ -2,7 +2,7 @@ package ro.upt.backenddegree.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.*
-import ro.upt.backenddegree.enums.Role
+import ro.upt.backenddegree.enums.Role as Role
 
 @Entity
 @Table(name = "users")
@@ -18,5 +18,5 @@ data class User(
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    val roles: Set<Role> = setOf(),
+    var roles: MutableSet<Role> = mutableSetOf()
 )

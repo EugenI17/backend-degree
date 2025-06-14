@@ -26,7 +26,6 @@ class SetupService(
     fun isInitialSetupNeeded(): Boolean = Files.notExists(setupFilePath)
 
     fun performInitialSetup(adminSetupDto: AdminSetupDto, logo: ByteArray) {
-
         val encryptedPassword = BCryptPasswordEncoder().encode(adminSetupDto.password)
         adminSetupDto.password = encryptedPassword
         val mapper = jacksonObjectMapper()
@@ -37,7 +36,7 @@ class SetupService(
         val adminUser = User(
             username = adminSetupDto.username,
             password = encryptedPassword,
-            roles = setOf(Role.ROLE_ADMIN)
+            roles = mutableSetOf(Role.ROLE_ADMIN)
         )
         userRepository.save(adminUser)
     }

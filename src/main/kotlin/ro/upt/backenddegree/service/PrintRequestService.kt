@@ -1,6 +1,6 @@
 package ro.upt.backenddegree.service
 
-import PrintedBarOrder
+import ro.upt.backenddegree.dto.PrintedBarOrder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient

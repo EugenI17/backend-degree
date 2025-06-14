@@ -35,7 +35,7 @@ class PrintedItemMapper (
         return ReceiptItemDto(
             name = menuProduct.name,
             quantity = orderItem.quantity,
-            price = menuProduct.price
+            price = menuProduct.price * orderItem.quantity
         )
     }
 

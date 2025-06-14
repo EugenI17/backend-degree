@@ -1,11 +1,7 @@
 package ro.upt.backenddegree.controller
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ro.upt.backenddegree.entity.User
 import ro.upt.backenddegree.service.UserService
 
@@ -33,4 +29,14 @@ class UserController(
             ResponseEntity.badRequest().body(e.message)
         }
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteEmployeeAccount(@PathVariable id: Long): ResponseEntity<Any> =
+        try {
+            userService.deleteById( id)
+            ResponseEntity.ok("Account deleted.")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+
 }

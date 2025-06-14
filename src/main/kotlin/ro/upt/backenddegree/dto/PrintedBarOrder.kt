@@ -1,5 +1,4 @@
-import ro.upt.backenddegree.dto.PrintedItem
-
+package ro.upt.backenddegree.dto
 
 data class PrintedBarOrder(
     var tableNumber: String? = null,

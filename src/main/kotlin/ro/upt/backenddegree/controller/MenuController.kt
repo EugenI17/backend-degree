@@ -23,14 +23,14 @@ class MenuController {
     }
 
     @PostMapping("/product")
-    fun addProduct(@RequestBody productDto: MenuProductDto): ResponseEntity<Any> {
-        return try {
+    fun addProduct(@RequestBody productDto: MenuProductDto): ResponseEntity<Any> =
+         try {
             menuProductService.addProduct(productDto)
             ResponseEntity.ok("Product added successfully")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }
-    }
+
 
     @DeleteMapping("/product/{id}")
     fun deleteProduct(@PathVariable id: Long): ResponseEntity<Any> {
